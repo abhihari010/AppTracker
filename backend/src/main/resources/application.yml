@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+logging:
+  level:
+    com.zaxxer.hikari: DEBUG
+    org.springframework.jdbc.datasource: DEBUG
+    org.springframework.boot.autoconfigure.jdbc: DEBUG
+    org.springframework.core.env: TRACE
+
+spring.flyway:
+  enabled: true
+  clean-disabled: false
+  clean-on-validation-error: true
+  baseline-on-migrate: true
+
+jwt:
+  secret: ${JWT_SECRET}
+
+server:
+  port: ${PORT:8080}
+
+r2:
+  account-id: ${R2_ACCOUNT_ID}
+  access-key-id: ${R2_ACCESS_KEY_ID}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY}
+  bucket: ${R2_BUCKET}
+  endpoint: ${R2_ENDPOINT}

@@ -1,0 +1,36 @@
+# Environment files
+.env
+backend/.env
+frontend/.env
+*.env.local
+
+# Local OS files
+Thumbs.db
+.DS_Store
+
+# Java/Maven/Spring Boot
+backend/target/
+backend/*.log
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+*.class
+
+# Node.js/React
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/*.log
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# Package manager lock files (optional - uncomment if you want to ignore)
+# backend/pom.xml.lock
+# frontend/package-lock.json
+# frontend/yarn.lock

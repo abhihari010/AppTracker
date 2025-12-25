@@ -9,12 +9,6 @@ CREATE TABLE users (
   created_at timestamptz NOT NULL DEFAULT NOW()
 );
 
--- Application status enum
-CREATE TYPE application_status AS ENUM ('SAVED','APPLIED','OA','INTERVIEW','OFFER','REJECTED');
-
--- Priority enum
-CREATE TYPE priority_level AS ENUM ('LOW','MEDIUM','HIGH');
-
 -- Applications table
 CREATE TABLE applications (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -22,10 +16,10 @@ CREATE TABLE applications (
   company text NOT NULL,
   role text NOT NULL,
   location text,
-  status application_status NOT NULL DEFAULT 'SAVED',
+  status VARCHAR(50) NOT NULL DEFAULT 'SAVED',
   date_applied timestamptz,
   job_url text,
-  priority priority_level DEFAULT 'MEDIUM',
+  priority VARCHAR(50) DEFAULT 'MEDIUM',
   archived boolean NOT NULL DEFAULT false,
   created_at timestamptz NOT NULL DEFAULT NOW(),
   updated_at timestamptz NOT NULL DEFAULT NOW()
@@ -85,12 +79,10 @@ CREATE TABLE attachments (
 CREATE INDEX idx_attachments_application_id ON attachments(application_id);
 
 -- Activity log table
-CREATE TYPE activity_type AS ENUM ('CREATED','STATUS_CHANGED','NOTE_ADDED','CONTACT_ADDED','FILE_UPLOADED','REMINDER_ADDED','UPDATED');
-
 CREATE TABLE activity (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   application_id uuid NOT NULL REFERENCES applications(id) ON DELETE CASCADE,
-  type activity_type NOT NULL,
+  type VARCHAR(100) NOT NULL,
   message text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT NOW()
 );

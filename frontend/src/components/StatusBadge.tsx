@@ -27,7 +27,10 @@ const STATUS_LABELS: Record<string, string> = {
   GHOSTED: "Ghosted",
 };
 
-export function StatusBadge({ status, className = "" }: StatusBadgeProps) {
+export default function StatusBadge({
+  status,
+  className = "",
+}: StatusBadgeProps) {
   const style = STATUS_STYLES[status] || STATUS_STYLES.WISHLIST;
   const label = STATUS_LABELS[status] || status;
 

@@ -1,14 +1,14 @@
 import { MapPin, Calendar, Building2 } from "lucide-react";
 import { format } from "date-fns";
-import { StatusBadge } from "./StatusBadge";
-import { PriorityBadge } from "./PriorityBadge";
+import StatusBadge from "./StatusBadge";
+import PriorityBadge from "./PriorityBadge";
 
 interface Application {
   id: number;
-  companyName: string;
-  positionTitle: string;
+  company: string;
+  role: string;
   location?: string;
-  applicationDate?: string;
+  dateApplied?: string;
   status: string;
   priority: string;
 }
@@ -19,7 +19,7 @@ interface ApplicationCardProps {
   className?: string;
 }
 
-export function ApplicationCard({
+export default function ApplicationCard({
   application,
   onClick,
   className = "",
@@ -32,11 +32,11 @@ export function ApplicationCard({
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-gray-900 truncate">
-            {application.positionTitle}
+            {application.role}
           </h3>
           <div className="flex items-center gap-1.5 mt-1 text-sm text-gray-600">
-            <Building2 className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{application.companyName}</span>
+            <Building2 className="h-4 w-4 shrink-0" />
+            <span className="truncate">{application.company}</span>
           </div>
         </div>
         <PriorityBadge priority={application.priority} />
@@ -45,15 +45,15 @@ export function ApplicationCard({
       <div className="space-y-2 mb-3">
         {application.location && (
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
-            <MapPin className="h-4 w-4 flex-shrink-0" />
+            <MapPin className="h-4 w-4 shrink-0" />
             <span className="truncate">{application.location}</span>
           </div>
         )}
-        {application.applicationDate && (
+        {application.dateApplied && (
           <div className="flex items-center gap-1.5 text-sm text-gray-600">
-            <Calendar className="h-4 w-4 flex-shrink-0" />
+            <Calendar className="h-4 w-4 shrink-0" />
             <span>
-              {format(new Date(application.applicationDate), "MMM d, yyyy")}
+              {format(new Date(application.dateApplied), "MMM d, yyyy")}
             </span>
           </div>
         )}

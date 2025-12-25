@@ -26,15 +26,12 @@ import api from "../api";
 import Nav from "../components/Nav";
 
 const STATUS_COLORS: Record<string, string> = {
-  WISHLIST: "#9CA3AF",
   APPLIED: "#3B82F6",
   ONLINE_ASSESSMENT: "#8B5CF6",
   INTERVIEWED: "#EAB308",
   OFFER: "#10B981",
   REJECTED: "#EF4444",
   ACCEPTED: "#059669",
-  DECLINED: "#F97316",
-  GHOSTED: "#64748B",
 };
 
 export default function Analytics() {
@@ -57,8 +54,11 @@ export default function Analytics() {
     );
   }
 
+  // Ensure applications is an array
+  const apps = Array.isArray(applications) ? applications : [];
+
   // Status distribution
-  const statusCounts = applications.reduce((acc: any, app: any) => {
+  const statusCounts = apps.reduce((acc: any, app: any) => {
     acc[app.status] = (acc[app.status] || 0) + 1;
     return acc;
   }, {});
@@ -77,8 +77,8 @@ export default function Analytics() {
 
   const weeklyData = weeks.map((weekStart) => {
     const weekEnd = endOfWeek(weekStart);
-    const count = applications.filter((app: any) => {
-      const appDate = new Date(app.applicationDate || app.createdAt);
+    const count = apps.filter((app: any) => {
+      const appDate = new Date(app.dateApplied || app.createdAt);
       return appDate >= weekStart && appDate <= weekEnd;
     }).length;
 
@@ -89,7 +89,7 @@ export default function Analytics() {
   });
 
   // Priority distribution
-  const priorityCounts = applications.reduce((acc: any, app: any) => {
+  const priorityCounts = apps.reduce((acc: any, app: any) => {
     acc[app.priority] = (acc[app.priority] || 0) + 1;
     return acc;
   }, {});
@@ -100,24 +100,18 @@ export default function Analytics() {
   }));
 
   // Conversion metrics
-  const totalApps = applications.length;
-  const appliedCount = applications.filter((app: any) =>
-    [
-      "APPLIED",
-      "ONLINE_ASSESSMENT",
-      "INTERVIEWED",
-      "OFFER",
-      "ACCEPTED",
-    ].includes(app.status)
+  const totalApps = apps.length;
+  const appliedCount = apps.filter((app: any) =>
+    ["APPLIED", "OA", "INTERVIEW", "OFFER"].includes(app.status)
   ).length;
-  const interviewedCount = applications.filter((app: any) =>
-    ["INTERVIEWED", "OFFER", "ACCEPTED"].includes(app.status)
+  const interviewedCount = apps.filter((app: any) =>
+    ["INTERVIEW", "OFFER"].includes(app.status)
   ).length;
-  const offerCount = applications.filter((app: any) =>
-    ["OFFER", "ACCEPTED"].includes(app.status)
+  const offerCount = apps.filter((app: any) =>
+    ["OFFER"].includes(app.status)
   ).length;
-  const acceptedCount = applications.filter(
-    (app: any) => app.status === "ACCEPTED"
+  const acceptedCount = apps.filter(
+    (app: any) => app.status === "OFFER"
   ).length;
 
   const interviewRate =

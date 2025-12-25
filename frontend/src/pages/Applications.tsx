@@ -10,10 +10,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import api from "../api";
-import { Nav } from "../components/Nav";
-import { ApplicationCard } from "../components/ApplicationCard";
-import { StatusBadge } from "../components/StatusBadge";
-import { PriorityBadge } from "../components/PriorityBadge";
+import Nav from "../components/Nav";
+import ApplicationCard from "../components/ApplicationCard";
+import StatusBadge from "../components/StatusBadge";
+import PriorityBadge from "../components/PriorityBadge";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -28,14 +28,16 @@ export default function Applications() {
   const { data: applications = [], isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
-      const response = await api.get("/api/applications");
-      return response.data;
+      const response = await api.get("/apps");
+      // Handle both paginated and direct array responses
+      const data = response.data.content || response.data;
+      return Array.isArray(data) ? data : [];
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: number) => {
-      await api.delete(`/api/applications/${id}`);
+      await api.delete(`/apps/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
@@ -44,14 +46,17 @@ export default function Applications() {
 
   // Filter and search
   const filteredApplications = useMemo(() => {
+    // Ensure we always work with an array
+    if (!Array.isArray(applications)) return [];
+
     let filtered = applications;
 
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
         (app: any) =>
-          app.companyName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          app.positionTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.company?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          app.role?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           app.location?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -146,15 +151,12 @@ export default function Applications() {
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 appearance-none"
                 >
                   <option value="ALL">All Statuses</option>
-                  <option value="WISHLIST">Wishlist</option>
+                  <option value="SAVED">Saved</option>
                   <option value="APPLIED">Applied</option>
-                  <option value="ONLINE_ASSESSMENT">Online Assessment</option>
-                  <option value="INTERVIEWED">Interviewed</option>
+                  <option value="OA">Online Assessment</option>
+                  <option value="INTERVIEW">Interview</option>
                   <option value="OFFER">Offer</option>
                   <option value="REJECTED">Rejected</option>
-                  <option value="ACCEPTED">Accepted</option>
-                  <option value="DECLINED">Declined</option>
-                  <option value="GHOSTED">Ghosted</option>
                 </select>
               </div>
 
@@ -173,7 +175,6 @@ export default function Applications() {
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="HIGH">High</option>
-                  <option value="URGENT">Urgent</option>
                 </select>
               </div>
             </div>

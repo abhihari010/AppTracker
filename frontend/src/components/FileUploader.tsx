@@ -3,11 +3,11 @@ import { Upload, X, File, Loader2 } from "lucide-react";
 import api from "../api";
 
 interface FileUploaderProps {
-  applicationId: number;
+  applicationId: string;
   onUploadComplete?: () => void;
 }
 
-export function FileUploader({
+export default function FileUploader({
   applicationId,
   onUploadComplete,
 }: FileUploaderProps) {
@@ -32,23 +32,20 @@ export function FileUploader({
     try {
       // Step 1: Get presigned URL
       const presignResponse = await api.post(
-        `/api/applications/${applicationId}/attachments/presign`,
+        `/apps/${applicationId}/attachments/presign`,
         {
           fileName: selectedFile.name,
-          fileType: selectedFile.type,
-          fileSize: selectedFile.size,
+          contentType: selectedFile.type,
+          sizeBytes: selectedFile.size,
         }
       );
 
-      const { uploadUrl, fileKey } = presignResponse.data;
+      const { uploadUrl, objectKey } = presignResponse.data;
 
       // Step 2: Upload to R2
       const uploadResponse = await fetch(uploadUrl, {
         method: "PUT",
         body: selectedFile,
-        headers: {
-          "Content-Type": selectedFile.type,
-        },
       });
 
       if (!uploadResponse.ok) {
@@ -56,11 +53,11 @@ export function FileUploader({
       }
 
       // Step 3: Confirm upload
-      await api.post(`/api/applications/${applicationId}/attachments/confirm`, {
-        fileKey,
+      await api.post(`/apps/${applicationId}/attachments/confirm`, {
+        objectKey,
         fileName: selectedFile.name,
-        fileType: selectedFile.type,
-        fileSize: selectedFile.size,
+        contentType: selectedFile.type,
+        sizeBytes: selectedFile.size,
       });
 
       setSelectedFile(null);

@@ -119,6 +119,12 @@ export default function Board() {
       const applicationId = active.id as number;
       const newStatus = over.id as string;
 
+      queryClient.setQueryData(["applications"], (old: any) => {
+        if (!Array.isArray(old)) return old;
+        return old.map((app: any) =>
+          app.id === applicationId ? { ...app, status: newStatus } : app
+        );
+      });
       updateStatusMutation.mutate({ id: applicationId, status: newStatus });
     }
 

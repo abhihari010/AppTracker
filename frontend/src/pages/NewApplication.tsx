@@ -5,6 +5,11 @@ import apiClient from "../api";
 import Nav from "../components/Nav";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import ImportJobModal, {
+  ImportedData,
+  ConfidenceBadge,
+} from "../components/ImportJobModal";
+import { Link as LinkIcon, AlertCircle } from "lucide-react";
 
 type FormState = {
   company: string;
@@ -23,6 +28,8 @@ export default function NewApplication() {
     priority: "MEDIUM",
     status: "SAVED",
   });
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importedData, setImportedData] = useState<ImportedData | null>(null);
   const navigate = useNavigate();
   const qc = useQueryClient();
 
@@ -42,14 +49,69 @@ export default function NewApplication() {
     createMut.mutate(form);
   };
 
+  const handleImportSuccess = (data: ImportedData) => {
+    setImportedData(data);
+    setForm({
+      ...form,
+      company: data.company || "",
+      role: data.role || "",
+      location: data.location || "",
+      jobUrl: data.jobUrl || "",
+    });
+  };
+
   return (
     <>
       <Nav />
+      <ImportJobModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImportSuccess={handleImportSuccess}
+      />
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            New Application
-          </h2>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              New Application
+            </h2>
+            <button
+              type="button"
+              onClick={() => setIsImportModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-blue-200 cursor-pointer"
+            >
+              <LinkIcon className="w-4 h-4" />
+              Import from URL
+            </button>
+          </div>
+
+          {importedData && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium text-blue-900">
+                    Auto-imported from URL
+                  </p>
+                  <ConfidenceBadge confidence={importedData.confidence} />
+                </div>
+              </div>
+              {importedData.warnings && importedData.warnings.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {importedData.warnings.map((warning, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-start gap-2 text-xs text-yellow-800"
+                    >
+                      <AlertCircle className="w-3 h-3 shrink-0 mt-0.5" />
+                      <span>{warning}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-blue-700 mt-2">
+                Review and edit the fields below before saving
+              </p>
+            </div>
+          )}
           <form onSubmit={submit} className="space-y-4">
             <input
               value={form.company}

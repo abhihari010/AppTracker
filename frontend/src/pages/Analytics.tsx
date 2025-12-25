@@ -26,9 +26,10 @@ import api from "../api";
 import Nav from "../components/Nav";
 
 const STATUS_COLORS: Record<string, string> = {
+  SAVED: "#B06645",
   APPLIED: "#3B82F6",
   ONLINE_ASSESSMENT: "#8B5CF6",
-  INTERVIEWED: "#EAB308",
+  INTERVIEW: "#EAB308",
   OFFER: "#10B981",
   REJECTED: "#EF4444",
   ACCEPTED: "#059669",
@@ -257,16 +258,18 @@ export default function Analytics() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {statusData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={
-                          STATUS_COLORS[
-                            entry.name.replace(/ /g, "_").toUpperCase()
-                          ] || "#9CA3AF"
-                        }
-                      />
-                    ))}
+                    {statusData.map(
+                      (entry, index) => (
+                        console.log(entry.name),
+                        console.log(STATUS_COLORS[entry.name]),
+                        (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={STATUS_COLORS[entry.name] || "#9CA3AF"}
+                          />
+                        )
+                      )
+                    )}
                   </Pie>
                   <Tooltip />
                 </PieChart>

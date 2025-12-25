@@ -24,6 +24,7 @@ public class ApplicationController {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationController.class);
 
     private final ApplicationService applicationService;
+    private final ImportService importService;
     private final NoteService noteService;
     private final ContactService contactService;
     private final ReminderService reminderService;
@@ -35,13 +36,15 @@ public class ApplicationController {
             ContactService contactService,
             ReminderService reminderService,
             AttachmentService attachmentService,
-            ActivityService activityService) {
+            ActivityService activityService,
+            ImportService importService) {
         this.applicationService = applicationService;
         this.noteService = noteService;
         this.contactService = contactService;
         this.reminderService = reminderService;
         this.attachmentService = attachmentService;
         this.activityService = activityService;
+        this.importService = importService;
     }
 
     @GetMapping
@@ -217,5 +220,14 @@ public class ApplicationController {
 
         List<Activity> activity = activityService.getActivity(userId, id);
         return ResponseEntity.ok(activity);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<ImportResponse> importApplication(
+            @AuthenticationPrincipal UUID userId,
+            @RequestBody ImportRequest request) {
+
+        ImportResponse result = importService.importApplication(userId, request);
+        return ResponseEntity.ok(result);
     }
 }

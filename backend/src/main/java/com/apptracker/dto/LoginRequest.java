@@ -1,7 +1,13 @@
 package com.apptracker.dto;
 
+import jakarta.validation.constraints.*;
+
 public class LoginRequest {
+    @Email
+    @NotNull(message = "Please provide an email")
     private String email;
+    @NotBlank
+    @NotNull(message = "Please provide a password")
     private String password;
 
     // Getters and Setters

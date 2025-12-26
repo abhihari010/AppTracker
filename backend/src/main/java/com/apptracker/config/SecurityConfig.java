@@ -36,7 +36,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults()) // enable CORS properly
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Explicitly permit the Actuator health endpoint (and actuator paths)
                         .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/actuator/**").permitAll()
                         .anyRequest().authenticated())

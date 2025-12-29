@@ -70,7 +70,9 @@ export default function Nav() {
               New Application
             </Link>
             <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-700">{user?.name}</span>
+              <Link to="/settings" className="text-sm text-gray-700">
+                {user?.name}
+              </Link>
               <button
                 onClick={handleLogout}
                 className="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"

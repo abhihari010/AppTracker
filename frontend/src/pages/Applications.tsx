@@ -14,12 +14,14 @@ import Nav from "../components/Nav";
 import ApplicationCard from "../components/ApplicationCard";
 import StatusBadge from "../components/StatusBadge";
 import PriorityBadge from "../components/PriorityBadge";
+import { useAuth } from "../hooks/useAuth";
 
 const ITEMS_PER_PAGE = 12;
 
 export default function Applications() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [priorityFilter, setPriorityFilter] = useState<string>("ALL");
@@ -51,6 +53,16 @@ export default function Applications() {
 
     let filtered = applications;
 
+    // Filter out archived applications unless user preference says to show them
+    if (!user?.showArchivedApps) {
+      filtered = filtered.filter((app: any) => !app.archived);
+    }
+
+    // Filter out archived applications unless user preference says to show them
+    if (!user?.showArchivedApps) {
+      filtered = filtered.filter((app: any) => !app.archived);
+    }
+
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
@@ -72,7 +84,13 @@ export default function Applications() {
     }
 
     return filtered;
-  }, [applications, searchQuery, statusFilter, priorityFilter]);
+  }, [
+    applications,
+    searchQuery,
+    statusFilter,
+    priorityFilter,
+    user?.showArchivedApps,
+  ]);
 
   // Pagination
   const totalPages = Math.ceil(filteredApplications.length / ITEMS_PER_PAGE);

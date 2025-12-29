@@ -10,6 +10,7 @@ import Board from "./pages/Board";
 import Analytics from "./pages/Analytics";
 import ApplicationDetail from "./pages/ApplicationDetail";
 import RequireAuth from "./RequireAuth";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -71,6 +72,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <Analytics />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <RequireAuth>
+                <Settings />
               </RequireAuth>
             }
           />

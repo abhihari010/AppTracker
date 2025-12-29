@@ -16,6 +16,7 @@ import { Search, Filter, Minimize2, Maximize2 } from "lucide-react";
 import api from "../api";
 import Nav from "../components/Nav";
 import ApplicationCard from "../components/ApplicationCard";
+import { useAuth } from "../hooks/useAuth";
 
 const STATUSES = [
   { id: "SAVED", label: "Saved", color: "bg-gray-100" },
@@ -31,6 +32,7 @@ const ITEMS_PER_COLUMN = 5;
 export default function Board() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [activeId, setActiveId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [compactView, setCompactView] = useState(false);
@@ -66,6 +68,11 @@ export default function Board() {
 
     let filtered = applications;
 
+    // Filter out archived applications unless user preference says to show them
+    if (!user?.showArchivedApps) {
+      filtered = filtered.filter((app: any) => !app.archived);
+    }
+
     // Search filter
     if (searchQuery) {
       filtered = filtered.filter(
@@ -97,7 +104,7 @@ export default function Board() {
     }
 
     return filtered;
-  }, [applications, searchQuery, companyFilter, dateRange]);
+  }, [applications, searchQuery, companyFilter, dateRange, user?.showArchivedApps]);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {

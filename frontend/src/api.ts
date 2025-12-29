@@ -40,6 +40,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  emailNotifications: boolean;
+  autoArchiveOldApps: boolean;
+  showArchivedApps: boolean;
 }
 
 export interface Application {
@@ -121,6 +124,20 @@ export const authApi = {
     api.post<{ token: string; user: User }>("/auth/login", data),
 
   getCurrentUser: () => api.get<User>("/auth/me"),
+
+  updateUser: (data: { name: string; email: string }) =>
+    api.put("/auth/change-profile", data),
+
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.put("/auth/change-password", data),
+
+  updatePreferences: (data: {
+    emailNotifications?: boolean;
+    autoArchiveOldApps?: boolean;
+    showArchivedApps?: boolean;
+  }) => api.put<User>("/auth/preferences", data),
+
+  deleteAccount: () => api.delete("/auth/account"),
 };
 
 // Applications API

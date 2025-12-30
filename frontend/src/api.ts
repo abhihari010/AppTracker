@@ -43,6 +43,8 @@ export interface User {
   emailNotifications: boolean;
   autoArchiveOldApps: boolean;
   showArchivedApps: boolean;
+  hasPassword: boolean;
+  oauthProvider: string | null;
 }
 
 export interface Application {
@@ -130,6 +132,9 @@ export const authApi = {
 
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.put("/auth/change-password", data),
+
+  setPassword: (data: { newPassword: string }) =>
+    api.put("/auth/set-password", data),
 
   updatePreferences: (data: {
     emailNotifications?: boolean;

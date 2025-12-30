@@ -51,7 +51,8 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(saved.getId());
         UserDTO userDTO = new UserDTO(saved.getId(), saved.getName(), saved.getEmail(),
-                saved.isEmailNotifications(), saved.isAutoArchiveOldApps(), saved.isShowArchivedApps());
+                saved.isEmailNotifications(), saved.isAutoArchiveOldApps(), saved.isShowArchivedApps(),
+                saved.getPasswordHash() != null, saved.getOauthProvider());
 
         return ResponseEntity.ok(new AuthResponse(token, userDTO));
     }
@@ -69,7 +70,8 @@ public class AuthController {
 
         String token = jwtUtil.generateToken(u.getId());
         UserDTO userDTO = new UserDTO(u.getId(), u.getName(), u.getEmail(),
-                u.isEmailNotifications(), u.isAutoArchiveOldApps(), u.isShowArchivedApps());
+                u.isEmailNotifications(), u.isAutoArchiveOldApps(), u.isShowArchivedApps(),
+                u.getPasswordHash() != null, u.getOauthProvider());
 
         return ResponseEntity.ok(new AuthResponse(token, userDTO));
     }
@@ -80,7 +82,8 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDTO userDTO = new UserDTO(user.getId(), user.getName(), user.getEmail(),
-                user.isEmailNotifications(), user.isAutoArchiveOldApps(), user.isShowArchivedApps());
+                user.isEmailNotifications(), user.isAutoArchiveOldApps(), user.isShowArchivedApps(),
+                user.getPasswordHash() != null, user.getOauthProvider());
         return ResponseEntity.ok(userDTO);
     }
 
@@ -105,7 +108,8 @@ public class AuthController {
 
         UserDTO userDTO = new UserDTO(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),
                 updatedUser.isEmailNotifications(), updatedUser.isAutoArchiveOldApps(),
-                updatedUser.isShowArchivedApps());
+                updatedUser.isShowArchivedApps(), updatedUser.getPasswordHash() != null,
+                updatedUser.getOauthProvider());
         return ResponseEntity.ok(userDTO);
     }
 
@@ -131,6 +135,25 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
     }
 
+    @PutMapping("/set-password")
+    public ResponseEntity<?> setPassword(@AuthenticationPrincipal UUID userId,
+            @Validated @RequestBody SetPasswordRequest req) {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Validate new password length
+        if (req.getNewPassword() == null || req.getNewPassword().length() < 8) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Password must be at least 8 characters long"));
+        }
+
+        // Set password for OAuth user (no current password check)
+        user.setPasswordHash(pwEncoder.encode(req.getNewPassword()));
+        user.setUpdatedAt(OffsetDateTime.now());
+        userRepo.save(user);
+
+        return ResponseEntity.ok(Map.of("message", "Password set successfully"));
+    }
+
     @PutMapping("/preferences")
     public ResponseEntity<UserDTO> updatePreferences(@AuthenticationPrincipal UUID userId,
             @Validated @RequestBody UpdatePreferencesRequest req) {
@@ -151,7 +174,8 @@ public class AuthController {
         User updatedUser = userRepo.save(user);
         UserDTO userDTO = new UserDTO(updatedUser.getId(), updatedUser.getName(), updatedUser.getEmail(),
                 updatedUser.isEmailNotifications(), updatedUser.isAutoArchiveOldApps(),
-                updatedUser.isShowArchivedApps());
+                updatedUser.isShowArchivedApps(), updatedUser.getPasswordHash() != null,
+                updatedUser.getOauthProvider());
 
         return ResponseEntity.ok(userDTO);
     }

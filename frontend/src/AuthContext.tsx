@@ -12,6 +12,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
+  oauthLogin: (token: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
@@ -58,6 +59,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setUser(newUser);
   };
 
+  const oauthLogin = async (jwtToken: string) => {
+    // Store the JWT token from OAuth2 redirect
+    localStorage.setItem("app_token", jwtToken);
+    setToken(jwtToken);
+
+    // Fetch user details using the token
+    const response = await authApi.getCurrentUser();
+    setUser(response.data);
+  };
+
   const register = async (name: string, email: string, password: string) => {
     const response = await authApi.register({ name, email, password });
     const { token: newToken, user: newUser } = response.data;
@@ -81,7 +92,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, register, logout, refreshUser, isLoading }}
+      value={{
+        user,
+        token,
+        login,
+        oauthLogin,
+        register,
+        logout,
+        refreshUser,
+        isLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>

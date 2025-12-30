@@ -1,6 +1,8 @@
 package com.apptracker.config;
 
 import com.apptracker.security.JwtAuthFilter;
+import com.apptracker.security.OAuth2SuccessHandler;
+import com.apptracker.service.OAuth2Service;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,9 +26,14 @@ import java.util.Collections;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final OAuth2SuccessHandler oauth2SuccessHandler;
+    private final OAuth2Service oauth2Service;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, OAuth2SuccessHandler oauth2SuccessHandler,
+            OAuth2Service oauth2Service) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.oauth2SuccessHandler = oauth2SuccessHandler;
+        this.oauth2Service = oauth2Service;
     }
 
     @Bean
@@ -38,9 +45,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                         .requestMatchers("/api/auth/login", "/api/auth/register", "/actuator/**",
-                                "/api/forgot-password/**")
+                                "/api/forgot-password/**", "/oauth2/**", "/login/oauth2/**")
                         .permitAll()
                         .anyRequest().authenticated())
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(oauth2Service))
+                        .successHandler(oauth2SuccessHandler))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

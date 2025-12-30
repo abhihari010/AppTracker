@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import OAuth2Redirect from "./pages/OAuth2Redirect";
 import Dashboard from "./pages/Dashboard";
 import Applications from "./pages/Applications";
 import NewApplication from "./pages/NewApplication";
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
           <Route
             path="/"
             element={

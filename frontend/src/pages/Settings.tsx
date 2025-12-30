@@ -59,6 +59,17 @@ export default function Settings() {
     }
   }, [user]);
 
+  // Auto-dismiss message after 5 seconds
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -108,16 +119,34 @@ export default function Settings() {
     }
 
     try {
-      await authApi.changePassword({
-        currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword,
+      // If user has OAuth but no password, they're setting a password (no current password needed)
+      const hasPassword = user?.hasPassword;
+
+      if (hasPassword) {
+        // Changing existing password - requires current password
+        await authApi.changePassword({
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword,
+        });
+      } else {
+        // Setting password for OAuth user - no current password needed
+        await authApi.setPassword({
+          newPassword: passwordForm.newPassword,
+        });
+      }
+
+      setMessage({
+        type: "success",
+        text: hasPassword
+          ? "Password changed successfully!"
+          : "Password set successfully!",
       });
-      setMessage({ type: "success", text: "Password changed successfully!" });
       setPasswordForm({
         currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
+      await refreshUser(); // Refresh to update hasPassword status
     } catch (error: any) {
       setMessage({
         type: "error",
@@ -305,30 +334,64 @@ export default function Settings() {
         {/* Security Tab */}
         {activeTab === "security" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-              <form onSubmit={handlePasswordChange} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="currentPassword"
-                    className="block text-sm font-medium text-gray-700 mb-1"
+            {/* Show OAuth info if user has OAuth provider */}
+            {user?.oauthProvider && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    Current Password
-                  </label>
-                  <input
-                    type="password"
-                    id="currentPassword"
-                    value={passwordForm.currentPassword}
-                    onChange={(e) =>
-                      setPasswordForm({
-                        ...passwordForm,
-                        currentPassword: e.target.value,
-                      })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <p className="text-sm text-blue-800">
+                    You signed in with{" "}
+                    <span className="font-semibold capitalize">
+                      {user.oauthProvider}
+                    </span>
+                    {!user.hasPassword &&
+                      " and haven't set a password yet. You can set one below to enable email/password login."}
+                  </p>
                 </div>
+              </div>
+            )}
+
+            <div className="bg-white rounded-lg shadow p-6">
+              <h2 className="text-xl font-semibold mb-4">
+                {user?.hasPassword ? "Change Password" : "Set Password"}
+              </h2>
+              <form onSubmit={handlePasswordChange} className="space-y-4">
+                {/* Only show current password field if user has a password */}
+                {user?.hasPassword && (
+                  <div>
+                    <label
+                      htmlFor="currentPassword"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      id="currentPassword"
+                      value={passwordForm.currentPassword}
+                      onChange={(e) =>
+                        setPasswordForm({
+                          ...passwordForm,
+                          currentPassword: e.target.value,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      required
+                    />
+                  </div>
+                )}
                 <div>
                   <label
                     htmlFor="newPassword"
@@ -379,7 +442,7 @@ export default function Settings() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {loading ? "Changing..." : "Change Password"}
                   </button>
@@ -398,7 +461,7 @@ export default function Settings() {
               <button
                 onClick={handleDeleteAccount}
                 disabled={loading}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 Delete Account
               </button>

@@ -9,6 +9,8 @@ public class UserDTO {
     private boolean emailNotifications;
     private boolean autoArchiveOldApps;
     private boolean showArchivedApps;
+    private boolean hasPassword; // False for OAuth-only users
+    private String oauthProvider; // e.g., "google", "github"
 
     public UserDTO() {
     }
@@ -19,14 +21,27 @@ public class UserDTO {
         this.email = email;
     }
 
-    public UserDTO(UUID id, String name, String email, boolean emailNotifications, 
-                   boolean autoArchiveOldApps, boolean showArchivedApps) {
+    public UserDTO(UUID id, String name, String email, boolean emailNotifications,
+            boolean autoArchiveOldApps, boolean showArchivedApps) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.emailNotifications = emailNotifications;
         this.autoArchiveOldApps = autoArchiveOldApps;
         this.showArchivedApps = showArchivedApps;
+    }
+
+    public UserDTO(UUID id, String name, String email, boolean emailNotifications,
+            boolean autoArchiveOldApps, boolean showArchivedApps,
+            boolean hasPassword, String oauthProvider) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.emailNotifications = emailNotifications;
+        this.autoArchiveOldApps = autoArchiveOldApps;
+        this.showArchivedApps = showArchivedApps;
+        this.hasPassword = hasPassword;
+        this.oauthProvider = oauthProvider;
     }
 
     // Getters and Setters
@@ -76,5 +91,21 @@ public class UserDTO {
 
     public void setShowArchivedApps(boolean showArchivedApps) {
         this.showArchivedApps = showArchivedApps;
+    }
+
+    public boolean isHasPassword() {
+        return hasPassword;
+    }
+
+    public void setHasPassword(boolean hasPassword) {
+        this.hasPassword = hasPassword;
+    }
+
+    public String getOauthProvider() {
+        return oauthProvider;
+    }
+
+    public void setOauthProvider(String oauthProvider) {
+        this.oauthProvider = oauthProvider;
     }
 }

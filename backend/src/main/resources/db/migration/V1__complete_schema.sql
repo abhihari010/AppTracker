@@ -1,19 +1,26 @@
 -- AppTracker Database Schema - Complete Initial Setup
 -- This single file consolidates all database tables and their structure
 
--- Users table with all preference columns
+-- Users table with all preference columns and OAuth2 support
 CREATE TABLE users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   email text UNIQUE NOT NULL,
-  password_hash text NOT NULL,
+  password_hash text,
   email_notifications boolean NOT NULL DEFAULT true,
   auto_archive_old_apps boolean NOT NULL DEFAULT false,
   show_archived_apps boolean NOT NULL DEFAULT false,
   email_verified boolean NOT NULL DEFAULT false,
+  oauth_provider VARCHAR(50),
+  oauth_id VARCHAR(255),
   created_at timestamptz NOT NULL DEFAULT NOW(),
   updated_at timestamptz NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_users_oauth_provider_id ON users(oauth_provider, oauth_id);
+
+COMMENT ON COLUMN users.oauth_provider IS 'OAuth2 provider name (google, github, etc.)';
+COMMENT ON COLUMN users.oauth_id IS 'Unique identifier from OAuth2 provider';
 
 -- Applications table
 CREATE TABLE applications (

@@ -36,6 +36,12 @@ public class User {
     @Column(name = "updated_at")
     private OffsetDateTime updatedAt;
 
+    @Column(name = "oauth_provider")
+    private String oauthProvider;
+
+    @Column(name = "oauth_id")
+    private String oauthId;
+
     public User() {
         this.id = UUID.randomUUID();
         this.createdAt = OffsetDateTime.now();
@@ -124,6 +130,22 @@ public class User {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getOauthProvider() {
+        return oauthProvider;
+    }
+
+    public void setOauthProvider(String oauthProvider) {
+        this.oauthProvider = oauthProvider;
+    }
+
+    public String getOauthId() {
+        return oauthId;
+    }
+
+    public void setOauthId(String oauthId) {
+        this.oauthId = oauthId;
     }
 
 }

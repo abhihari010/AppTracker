@@ -22,12 +22,37 @@ spring:
           starttls:
             enable: true
 
+  security:
+    oauth2:
+      client:
+        registration:
+          # Google OAuth2 Configuration
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
+          # GitHub OAuth2 Configuration
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - read:user
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
 logging:
   level:
     com.zaxxer.hikari: DEBUG
     org.springframework.jdbc.datasource: DEBUG
     org.springframework.boot.autoconfigure.jdbc: DEBUG
     org.springframework.core.env: TRACE
+    org.springframework.security: DEBUG
+    com.apptracker.service.OAuth2Service: DEBUG
+    com.apptracker.security.OAuth2SuccessHandler: DEBUG
 
 spring.flyway:
   enabled: true

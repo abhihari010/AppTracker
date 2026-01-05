@@ -1,136 +1,163 @@
-# AppTracker - Job Application & Internship Tracker
+# AppTracker
 
-## 🎯 Project Overview
+A comprehensive job application tracking system that helps users manage their job search journey. Track applications, set reminders, manage contacts, and gain insights into your job search progress.
 
-A full-stack application for tracking job applications with React frontend, Spring Boot backend, PostgreSQL database, and Cloudflare R2 for file storage.
+## Table of Contents
 
-## ✅ What's Been Implemented
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Status](#project-status)
+- [Getting Started](#getting-started)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Application](#running-the-application)
+- [Project Structure](#project-structure)
+- [Security](#security)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-### Backend (100% Complete)
+## Features
 
-#### Database Schema
+### Core Application Management
 
-- ✅ Complete PostgreSQL schema with 8 tables
-- ✅ Users, applications, notes, contacts, reminders, attachments, activity
-- ✅ Proper indexes, foreign keys, and enums
-- ✅ Flyway migration ready
+- Create and track job applications with company details, position, salary, and status
+- Track applications through multiple statuses: APPLIED, INTERVIEW, OFFER, ACCEPTED, REJECTED, WITHDRAWN
+- Assign priority levels: LOW, MEDIUM, HIGH
+- Import applications from CSV/spreadsheet files
+- Upload and store job descriptions, offer letters, and resumes via Cloudflare R2
 
-#### Domain Models
+### Application Details
 
-- ✅ All JPA entities with proper annotations
-- ✅ UUID primary keys
-- ✅ Timestamp tracking
-- ✅ Enums for status, priority, activity types
+- Add detailed notes and observations for each application
+- Manage recruiter and hiring manager contact information
+- Track all interactions and updates with activity logs
+- Set reminders for follow-ups and interview preparations
 
-#### Repositories
+### Job Discovery
 
-- ✅ JPA repositories for all entities
-- ✅ Custom queries with Specification API
-- ✅ Pagination and sorting support
+- Browse and search available job postings
+- Quick add discovered jobs to your application list
 
-#### Services
+### Analytics and Insights
 
-- ✅ ApplicationService - CRUD, filtering, status updates
-- ✅ NoteService, ContactService, ReminderService
-- ✅ AttachmentService with R2 presigned URLs
-- ✅ ActivityService for audit logging
-- ✅ R2StorageService for file operations
+- View application statistics and job search trends on dashboard
+- Track application distribution by status and priority
+- Visualize applications by status in a Kanban board with drag-and-drop
 
-#### Controllers
+### Authentication and Security
 
-- ✅ AuthController - register, login, /me
-- ✅ ApplicationController - Full REST API with nested resources
-- ✅ UtilityController - reminders, downloads
-- ✅ AnalyticsController - stats and metrics
-- ✅ CORS configured
-- ✅ JWT authentication on all protected routes
+- Register with email/password authentication
+- Email verification required on signup
+- Password reset functionality with email verification
+- OAuth2 integration with Google and GitHub
+- JWT token-based API security
 
-#### Security
+### User Management
 
-- ✅ Spring Security with JWT
-- ✅ JwtAuthFilter for token validation
-- ✅ User ownership checks
-- ✅ BCrypt password hashing
-- ✅ 401 handling
+- Manage account preferences in settings
+- Update user profile information
+- Securely delete account and all associated data
 
-#### File Storage (Cloudflare R2)
+## Tech Stack
 
-- ✅ AWS SDK S3 client configured
-- ✅ Presigned PUT URLs (15 min expiry)
-- ✅ Presigned GET URLs (5 min expiry)
-- ✅ File type validation
-- ✅ Size limits (10 MB)
-- ✅ Safe object key generation
+### Backend
 
-### Frontend (60% Complete)
+- Framework: Spring Boot 3.1.0
+- Language: Java 17
+- Database: PostgreSQL 15
+- ORM: Hibernate/JPA
+- Security: Spring Security 6, JWT (jjwt)
+- Cloud Storage: Cloudflare R2 (AWS S3 compatible)
+- Email: Spring Mail (Gmail SMTP)
+- Database Migration: Flyway
+- Build Tool: Maven
 
-#### Core Infrastructure
+### Frontend
 
-- ✅ React 18 with TypeScript
-- ✅ React Router v6
-- ✅ TanStack React Query for server state
-- ✅ Axios API client with interceptors
-- ✅ Tailwind CSS configured
-- ✅ All dependencies installed
+- Framework: React 18
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Build Tool: Vite
+- HTTP Client: Axios
+- Routing: React Router v6
+- Icons: Lucide React
+- Toast Notifications: Sonner
 
-#### Authentication
+### DevOps
 
-- ✅ AuthContext with React Context API
-- ✅ Protected routes (RequireAuth)
-- ✅ Login page (styling needs update)
-- ✅ Signup page (styling needs update)
-- ✅ Token management
-- ✅ 401 redirect handling
+- Version Control: Git
+- Package Management: npm (frontend), Maven (backend)
 
-#### API Client
+## Project Status
 
-- ✅ Comprehensive typed API client
-- ✅ All endpoints defined
-- ✅ Auth, Applications, Notes, Contacts, Reminders, Attachments, Activity, Analytics APIs
-- ✅ Request/response interceptors
+Current Version: 1.0.0
+Status: Ready for Production Deployment
 
-#### Pages Created
+### Project Status
 
-- ✅ Dashboard (with stats, reminders, recent apps)
-- ✅ Applications list (not yet integrated - file exists from before)
-- ⚠️ Login/Signup (need styling updates)
+This project is mainly completed and is being maintained by me.
+Some improvements that are currently being made are rate limiting as well as unit, E2E, and integration testing.
 
-#### Components Created
-
-- ✅ Nav component with navigation and logout
-
-## 🚀 Quick Start
+## Getting Started
 
 ### Prerequisites
 
-- Java 17+
-- Node.js 18+
-- PostgreSQL 14+
+**Backend:**
+
+- Java 17 or higher
+- Maven 3.8+
+- PostgreSQL 13+
+
+**Frontend:**
+
+- Node.js 16+ and npm 8+
+
+**External Services:**
+
+- Gmail account (for email verification)
 - Cloudflare R2 account (for file storage)
+- Google OAuth2 credentials (optional)
+- GitHub OAuth2 credentials (optional)
 
-### Backend Setup
+### Installation
 
-1. Create PostgreSQL database:
+#### Backend Setup
+
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/abhihari010/AppTracker.git
+   cd AppTracker/backend
+   ```
+
+2. Create PostgreSQL database:
 
 ```sql
 CREATE DATABASE apptracker;
 ```
 
-2. Set environment variables (create `backend/env-dev.ps1`):
+3. Set environment variables (create `backend/env-dev.ps1`):
 
 ```powershell
-$env:DATABASE_URL
-$env:DATABASE_USER
-$env:DATABASE_PASSWORD
-$env:JWT_SECRET
-$env:R2_ACCOUNT_ID
-$env:R2_ACCESS_KEY_ID
-$env:R2_SECRET_ACCESS_KEY=
-$env:R2_BUCKET
-$env:R2_ENDPOINT
+$env:DATABASE_URL = "jdbc:postgresql://localhost:5432/apptracker"
+$env:DATABASE_USER = "postgres"
+$env:DATABASE_PASSWORD = "your_password"
+$env:JWT_SECRET = "your-secret-key-min-32-characters"
+$env:R2_ACCOUNT_ID = "your-account-id"
+$env:R2_ACCESS_KEY_ID = "your-access-key"
+$env:R2_SECRET_ACCESS_KEY = "your-secret-key"
+$env:R2_BUCKET = "apptracker"
+$env:R2_ENDPOINT = "https://<your-account>.r2.cloudflarestorage.com"
+$env:MAIL_HOST = "smtp.gmail.com"
+$env:MAIL_PORT = "587"
+$env:MAIL_USER = "your-email@gmail.com"
+$env:MAIL_PASSWORD = "your-app-password"
+$env:GOOGLE_CLIENT_ID = "your-google-client-id"
+$env:GOOGLE_CLIENT_SECRET = "your-google-client-secret"
 ```
 
-3. Run backend:
+4. Run backend:
 
 ```powershell
 cd backend
@@ -140,7 +167,7 @@ mvn spring-boot:run
 
 Backend will start on http://localhost:8080
 
-### Frontend Setup
+#### Frontend Setup
 
 1. Install dependencies:
 
@@ -149,10 +176,10 @@ cd frontend
 npm install
 ```
 
-2. Create `.env`:
+2. Create `.env` file:
 
 ```
-VITE_API_URL=http://localhost:8080
+VITE_API_URL=http://localhost:8080/api
 ```
 
 3. Run frontend:
@@ -161,4 +188,81 @@ VITE_API_URL=http://localhost:8080
 npm run dev
 ```
 
-Frontend will start on http://localhost:3000
+Frontend will start on http://localhost:5173
+
+## Project Structure
+
+### Backend
+
+```
+backend
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com
+│   │   │       └── example
+│   │   │           ├── AppTrackerApplication.java
+│   │   │           ├── config
+│   │   │           ├── controller
+│   │   │           ├── model
+│   │   │           ├── repository
+│   │   │           ├── security
+│   │   │           └── service
+│   │   └── resources
+│   │       ├── db
+│   │       │   └── migration
+│   │       ├── application.properties
+│   │       └── static
+│   └── test
+└── pom.xml
+```
+
+### Frontend
+
+```
+frontend
+├── public
+├── src
+│   ├── components
+│   ├── hooks
+│   ├── pages
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── index.html
+└── package.json
+```
+
+## Security
+
+- Environment variables for all sensitive data
+- JWT tokens with 24-hour expiration
+- Password reset tokens with 1-hour expiration
+- BCrypt hashing with salt rounds
+- CORS configuration for frontend domain
+- SQL injection protection via JPA/Hibernate
+- XSS protection via content encoding
+- File upload validation and type checking
+- User ownership verification on all API endpoints
+
+## Deployment
+
+### Production Checklist
+
+- [ ] Environment variables configured
+- [ ] Database backups automated
+- [ ] HTTPS/TLS enabled
+- [ ] CORS updated for production domain
+- [ ] Monitoring and logging setup
+- [ ] Rate limiting configured
+- [ ] CDN setup for static assets
+- [ ] Database indexes verified
+- [ ] Error handling and alerts configured
+
+## Contributing
+
+Not currently accepting contributions. This is a personal project.
+
+## License
+
+MIT License

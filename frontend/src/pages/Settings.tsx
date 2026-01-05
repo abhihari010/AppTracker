@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { authApi } from "../api";
 import { useAuth } from "../hooks/useAuth";
 import Nav from "../components/Nav";
+import DeleteAccountModal from "../components/DeleteAccountModal";
 
 interface ProfileForm {
   name: string;
@@ -44,6 +45,7 @@ export default function Settings() {
     type: "success" | "error";
     text: string;
   } | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -161,23 +163,8 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to delete your account? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
-    const confirmText = prompt('Type "DELETE" to confirm account deletion:');
-    if (confirmText !== "DELETE") {
-      return;
-    }
-
     setLoading(true);
     try {
-      // TODO: Add backend endpoint for account deletion
-      // await api.delete('/auth/account');
       await authApi.deleteAccount();
       localStorage.removeItem("app_token");
       window.location.href = "/login";
@@ -187,8 +174,9 @@ export default function Settings() {
         text:
           error?.response?.data?.message ||
           error?.response?.data?.error ||
-          "Failed to change password. Please try again.",
+          "Failed to delete account. Please try again.",
       });
+      setShowDeleteModal(false);
     } finally {
       setLoading(false);
     }
@@ -459,7 +447,7 @@ export default function Settings() {
                 applications, notes, and data will be permanently deleted.
               </p>
               <button
-                onClick={handleDeleteAccount}
+                onClick={() => setShowDeleteModal(true)}
                 disabled={loading}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
@@ -546,6 +534,14 @@ export default function Settings() {
           </div>
         )}
       </div>
+
+      {/* Delete Account Modal */}
+      <DeleteAccountModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        loading={loading}
+      />
     </>
   );
 }

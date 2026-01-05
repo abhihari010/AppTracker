@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import { OpenJob, jobsApi } from "../api";
+import { useNavigate } from "react-router-dom";
 
 interface PageResponse<T> {
   content: T[];
@@ -20,6 +21,7 @@ const OpenJobs = () => {
   const [totalPages, setTotalPages] = useState<number>(0);
   const [totalElements, setTotalElements] = useState<number>(0);
   const pageSize = 20;
+  const navigate = useNavigate();
 
   const fetchOpenJobs = async (pageNum: number = 0) => {
     setLoading(true);
@@ -44,6 +46,9 @@ const OpenJobs = () => {
     fetchOpenJobs(page);
   }, []);
 
+  const handleAddApplication = (job: OpenJob) => {
+    navigate("/applications/new", { state: { prefillJob: job } });
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Nav />
@@ -102,6 +107,12 @@ const OpenJobs = () => {
                           </span>
                         </div>
                       </div>
+                      <button
+                        onClick={() => handleAddApplication(job)}
+                        className="ml-4 px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 cursor-pointer"
+                      >
+                        Add to my Applications
+                      </button>
                       <a
                         href={job.jobUrl}
                         target="_blank"

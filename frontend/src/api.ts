@@ -127,10 +127,16 @@ export interface Analytics {
 // Auth API
 export const authApi = {
   register: (data: { name: string; email: string; password: string }) =>
-    api.post<{ token: string; user: User }>("/auth/register", data),
+    api.post<{ message: string }>("/auth/register", data),
 
   login: (data: { email: string; password: string }) =>
     api.post<{ token: string; user: User }>("/auth/login", data),
+
+  verifyEmail: (token: string) =>
+    api.post("/auth/verify-email", {}, { params: { token } }),
+
+  resendVerificationEmail: (email: string) =>
+    api.post("/auth/resend-verification-email", { email }),
 
   getCurrentUser: () => api.get<User>("/auth/me"),
 

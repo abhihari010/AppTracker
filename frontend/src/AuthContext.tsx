@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   oauthLogin: (token: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   isLoading: boolean;
@@ -70,17 +71,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const response = await authApi.register({ name, email, password });
-    const { token: newToken, user: newUser } = response.data;
-    localStorage.setItem("app_token", newToken);
-    setToken(newToken);
-    setUser(newUser);
+    // Register returns only a message, no token yet
+    await authApi.register({ name, email, password });
+    // User will be redirected to verify email page
   };
 
   const logout = () => {
     localStorage.removeItem("app_token");
     setToken(null);
     setUser(null);
+  };
+
+  const verifyEmail = async (emailToken: string) => {
+    await authApi.verifyEmail(emailToken);
+    // Email verified, user can now login
   };
 
   const refreshUser = async () => {
@@ -98,6 +102,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         login,
         oauthLogin,
         register,
+        verifyEmail,
         logout,
         refreshUser,
         isLoading,

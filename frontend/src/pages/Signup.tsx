@@ -7,19 +7,53 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { register } = useAuth();
 
+  const validateForm = (): boolean => {
+    const errors: { [key: string]: string } = {};
+
+    if (!name) {
+      errors.name = "Full name is required";
+    } else if (name.length < 2) {
+      errors.name = "Name must be at least 2 characters";
+    }
+
+    if (!email) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
-    setIsSubmitting(true);
+
     setError("");
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
       await register(name, email, password);
-      navigate("/dashboard");
+      navigate(`/verify-email?email=${encodeURIComponent(email)}`);
     } catch (err: any) {
       setError(err.response?.data?.error || "Registration failed");
     } finally {
@@ -52,10 +86,17 @@ export default function Signup() {
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                validationErrors.name ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="John Doe"
               required
             />
+            {validationErrors.name && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.name}
+              </p>
+            )}
           </div>
 
           <div>
@@ -66,10 +107,17 @@ export default function Signup() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                validationErrors.email ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="you@example.com"
               required
             />
+            {validationErrors.email && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.email}
+              </p>
+            )}
           </div>
 
           <div>
@@ -80,10 +128,18 @@ export default function Signup() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                validationErrors.password ? "border-red-500" : "border-gray-300"
+              }`}
               placeholder="••••••••"
               required
             />
+            {validationErrors.password && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.password}
+              </p>
+            )}
+            <p className="text-gray-500 text-xs mt-1">Minimum 8 characters</p>
           </div>
 
           <button

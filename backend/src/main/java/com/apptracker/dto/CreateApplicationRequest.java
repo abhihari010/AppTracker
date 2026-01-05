@@ -3,6 +3,8 @@ package com.apptracker.dto;
 import jakarta.validation.constraints.*;
 import java.time.OffsetDateTime;
 
+import org.hibernate.validator.constraints.URL;
+
 public class CreateApplicationRequest {
     @NotBlank(message = "Company name is required")
     private String company;

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import apiClient from "../api";
+import apiClient, { OpenJob } from "../api";
 import Nav from "../components/Nav";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,7 +10,7 @@ import ImportJobModal, {
   ConfidenceBadge,
 } from "../components/ImportJobModal";
 import { Link as LinkIcon, AlertCircle } from "lucide-react";
-
+import { useLocation } from "react-router-dom";
 type FormState = {
   company: string;
   role: string;
@@ -32,6 +32,19 @@ export default function NewApplication() {
   const [importedData, setImportedData] = useState<ImportedData | null>(null);
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+  const location = useLocation();
+  const job = location.state?.prefillJob as OpenJob | undefined;
+  useEffect(() => {
+    if (job) {
+      setForm({
+        company: job.company,
+        role: job.role,
+        location: job.location,
+        jobUrl: job.jobUrl,
+      });
+    }
+  }, [job]);
 
   const createMut = useMutation<any, Error, FormState>({
     mutationFn: async (payload: FormState) => {

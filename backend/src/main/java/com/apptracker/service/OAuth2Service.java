@@ -37,10 +37,9 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         // Get user info from OAuth2 provider (Google/GitHub)
         OAuth2User oauth2User = super.loadUser(userRequest);
 
-        // Extract user details
         String email = oauth2User.getAttribute("email");
         String name = oauth2User.getAttribute("name");
-        String provider = userRequest.getClientRegistration().getRegistrationId(); // "google" or "github"
+        String provider = userRequest.getClientRegistration().getRegistrationId();
 
         logger.info("OAuth2 login attempt - Provider: {}, Email: {}, Name: {}", provider, email, name);
         logger.debug("OAuth2User attributes: {}", oauth2User.getAttributes());
@@ -109,7 +108,7 @@ public class OAuth2Service extends DefaultOAuth2UserService {
         User newUser = new User();
         newUser.setEmail(email);
         newUser.setName(name != null ? name : email.split("@")[0]);
-        newUser.setEmailVerified(true); // OAuth2 providers verify emails
+        newUser.setEmailVerified(true);
         newUser.setPasswordHash(null); // No password for OAuth2 users
         newUser.setOauthProvider(provider);
         newUser.setOauthId(providerId);

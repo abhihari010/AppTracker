@@ -15,6 +15,8 @@ import ApplicationDetail from "./pages/ApplicationDetail";
 import RequireAuth from "./RequireAuth";
 import Settings from "./pages/Settings";
 import OpenJobs from "./pages/OpenJobs";
+import ImportApplications from "./pages/ImportApplications";
+import VerifyEmail from "./pages/VerifyEmail";
 
 export default function App() {
   return (
@@ -26,6 +28,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
           <Route
             path="/"
             element={
@@ -95,6 +98,14 @@ export default function App() {
             element={
               <RequireAuth>
                 <OpenJobs />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/applications/import"
+            element={
+              <RequireAuth>
+                <ImportApplications />
               </RequireAuth>
             }
           />

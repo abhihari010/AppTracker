@@ -6,9 +6,32 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [validationErrors, setValidationErrors] = useState<{
+    [key: string]: string;
+  }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const validateForm = (): boolean => {
+    const errors: { [key: string]: string } = {};
+
+    if (!email) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = "Please enter a valid email address";
+    }
+
+    if (!password) {
+      errors.password = "Password is required";
+    } else if (password.length < 1) {
+      errors.password = "Password must not be empty";
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,6 +39,12 @@ export default function Login() {
     if (isSubmitting) return;
 
     setError("");
+    setErrorEmail("");
+
+    if (!validateForm()) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -26,7 +55,12 @@ export default function Login() {
         err.response?.data?.message ||
         err.response?.data?.error ||
         "Invalid credentials. Please try again.";
+      const errorEmailFromResponse = err.response?.data?.email;
+
       setError(errorMessage);
+      if (errorEmailFromResponse) {
+        setErrorEmail(errorEmailFromResponse);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -49,8 +83,22 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">
-              {error}
+            <div
+              className={`p-4 rounded-lg text-sm ${
+                error.includes("not verified")
+                  ? "bg-yellow-50 border border-yellow-200 text-yellow-800"
+                  : "bg-red-50 border border-red-200 text-red-600"
+              }`}
+            >
+              <p className="font-semibold mb-2">{error}</p>
+              {errorEmail && (
+                <Link
+                  to={`/verify-email?email=${encodeURIComponent(errorEmail)}`}
+                  className="text-sm font-medium underline hover:no-underline inline-block mt-2"
+                >
+                  Go to Verification Page →
+                </Link>
+              )}
             </div>
           )}
 
@@ -62,9 +110,16 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                validationErrors.email ? "border-red-500" : "border-gray-300"
+              }`}
               required
             />
+            {validationErrors.email && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.email}
+              </p>
+            )}
           </div>
 
           <div>
@@ -75,9 +130,16 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                validationErrors.password ? "border-red-500" : "border-gray-300"
+              }`}
               required
             />
+            {validationErrors.password && (
+              <p className="text-red-600 text-sm mt-1">
+                {validationErrors.password}
+              </p>
+            )}
           </div>
 
           <div className="text-right">

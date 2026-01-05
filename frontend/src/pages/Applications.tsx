@@ -8,6 +8,7 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
+  Upload,
 } from "lucide-react";
 import api from "../api";
 import Nav from "../components/Nav";
@@ -130,13 +131,22 @@ export default function Applications() {
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-gray-900">Applications</h1>
-            <button
-              onClick={() => navigate("/applications/new")}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              New Application
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate("/applications/import")}
+                className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
+              >
+                <Upload className="h-4 w-4" />
+                Import CSV
+              </button>
+              <button
+                onClick={() => navigate("/applications/new")}
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                New Application
+              </button>
+            </div>
           </div>
 
           {/* Filters */}

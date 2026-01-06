@@ -68,7 +68,9 @@ export default function Login() {
 
   const handleOAuth2Login = (provider: "google" | "github") => {
     // Redirect to backend OAuth2 endpoint
-    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+    window.location.href = `${
+      import.meta.env.VITE_API_URL
+    }/oauth2/authorization/${provider}`;
   };
 
   return (

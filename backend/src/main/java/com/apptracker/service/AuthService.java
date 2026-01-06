@@ -302,9 +302,7 @@ public class AuthService {
      * Helper method to send verification email
      */
     private void sendVerificationEmail(String email, String token) {
-        String verificationUrl = System.getenv("FRONTEND_URL") != null
-                ? System.getenv("FRONTEND_URL") + "/verify-email?token=" + token
-                : "http://localhost:3000/verify-email?token=" + token;
+        String verificationUrl = System.getenv("FRONTEND_URL") + "/verify-email?token=" + token;
 
         emailService.sendEmail(
                 email,

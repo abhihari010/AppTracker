@@ -109,7 +109,7 @@ export interface Activity {
   id: string;
   applicationId: string;
   activityType: string;
-  description: string;
+  message: string;
   createdAt: string;
 }
 

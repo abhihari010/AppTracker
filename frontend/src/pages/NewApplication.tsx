@@ -70,12 +70,13 @@ export default function NewApplication() {
       newErrors.role = "Role is required";
     }
 
-    setErrors(newErrors);
-
-    // Only submit if no errors
-    if (Object.keys(newErrors).length === 0) {
-      createMut.mutate(form);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
+
+    setErrors({});
+    createMut.mutate(form);
   };
 
   const handleImportSuccess = (data: ImportedData) => {

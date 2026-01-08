@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./AuthContext";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -39,14 +39,6 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route
-            path="/"
-            element={
-              <RequireAuth>
-                <Navigate to="/dashboard" replace />
-              </RequireAuth>
-            }
-          />
           <Route
             path="/dashboard"
             element={

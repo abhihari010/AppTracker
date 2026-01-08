@@ -16,10 +16,8 @@ export default function ActivityTab({ activities }: ActivityTabProps) {
           <div className="shrink-0 w-2 h-2 mt-2 bg-indigo-500 rounded-full" />
           <div className="flex-1">
             <p className="text-gray-700">{activity.activityType}</p>
-            {activity.description && (
-              <p className="text-sm text-gray-600 mt-1">
-                {activity.description}
-              </p>
+            {activity.message && (
+              <p className="text-sm text-gray-600 mt-1">{activity.message}</p>
             )}
             <p className="text-xs text-gray-500 mt-1">
               {format(new Date(activity.createdAt), "MMM d, yyyy h:mm a")}

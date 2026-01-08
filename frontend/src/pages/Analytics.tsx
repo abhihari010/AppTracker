@@ -258,18 +258,12 @@ export default function Analytics() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {statusData.map(
-                      (entry, index) => (
-                        console.log(entry.name),
-                        console.log(STATUS_COLORS[entry.name]),
-                        (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={STATUS_COLORS[entry.name] || "#9CA3AF"}
-                          />
-                        )
-                      )
-                    )}
+                    {statusData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={STATUS_COLORS[entry.name] || "#9CA3AF"}
+                      />
+                    ))}
                   </Pie>
                   <Tooltip />
                 </PieChart>

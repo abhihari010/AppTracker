@@ -28,6 +28,7 @@ export default function NewApplication() {
     priority: "MEDIUM",
     status: "SAVED",
   });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importedData, setImportedData] = useState<ImportedData | null>(null);
   const navigate = useNavigate();
@@ -59,7 +60,22 @@ export default function NewApplication() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    createMut.mutate(form);
+
+    // Validation
+    const newErrors: { [key: string]: string } = {};
+    if (!form.company || form.company.trim() === "") {
+      newErrors.company = "Company is required";
+    }
+    if (!form.role || form.role.trim() === "") {
+      newErrors.role = "Role is required";
+    }
+
+    setErrors(newErrors);
+
+    // Only submit if no errors
+    if (Object.keys(newErrors).length === 0) {
+      createMut.mutate(form);
+    }
   };
 
   const handleImportSuccess = (data: ImportedData) => {
@@ -126,18 +142,41 @@ export default function NewApplication() {
             </div>
           )}
           <form onSubmit={submit} className="space-y-4">
-            <input
-              value={form.company}
-              onChange={(e) => setForm({ ...form, company: e.target.value })}
-              placeholder="Company"
-              className="w-full p-2 border rounded mb-2"
-            />
-            <input
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-              placeholder="Role"
-              className="w-full p-2 border rounded mb-2"
-            />
+            <div>
+              <input
+                value={form.company}
+                onChange={(e) => {
+                  setForm({ ...form, company: e.target.value });
+                  if (errors.company) setErrors({ ...errors, company: "" });
+                }}
+                placeholder="Company"
+                className={`w-full p-2 border rounded mb-2 ${
+                  errors.company ? "border-red-500" : "border-gray-300"
+                }`}
+                required
+              />
+              {errors.company && (
+                <p className="text-red-600 text-sm">{errors.company}</p>
+              )}
+            </div>
+
+            <div>
+              <input
+                value={form.role}
+                onChange={(e) => {
+                  setForm({ ...form, role: e.target.value });
+                  if (errors.role) setErrors({ ...errors, role: "" });
+                }}
+                placeholder="Role"
+                className={`w-full p-2 border rounded mb-2 ${
+                  errors.role ? "border-red-500" : "border-gray-300"
+                }`}
+                required
+              />
+              {errors.role && (
+                <p className="text-red-600 text-sm">{errors.role}</p>
+              )}
+            </div>
             <input
               value={form.location || ""}
               onChange={(e) => setForm({ ...form, location: e.target.value })}

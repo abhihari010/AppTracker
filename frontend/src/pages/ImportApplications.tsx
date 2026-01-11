@@ -146,7 +146,7 @@ Amazon,Data Scientist,Remote,2024-01-25,REJECTED,LOW,https://amazon.jobs/en/jobs
                   <strong>status</strong> - Application status
                   <br />
                   <span className="text-xs ml-5">
-                    Values: APPLIED, INTERVIEW, OFFER, ACCEPTED, REJECTED,
+                    Values: APPLIED, INTERVIEW, OFFER, REJECTED,
                     WITHDRAWN
                   </span>
                 </li>

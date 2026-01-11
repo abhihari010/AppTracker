@@ -104,7 +104,13 @@ export default function Board() {
     }
 
     return filtered;
-  }, [applications, searchQuery, companyFilter, dateRange, user?.showArchivedApps]);
+  }, [
+    applications,
+    searchQuery,
+    companyFilter,
+    dateRange,
+    user?.showArchivedApps,
+  ]);
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {

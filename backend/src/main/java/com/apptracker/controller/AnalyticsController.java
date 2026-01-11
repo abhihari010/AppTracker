@@ -58,10 +58,6 @@ public class AnalyticsController {
         conversionRates.put("appliedToOffer", totalApplied > 0 ? (double) offers / totalApplied * 100 : 0);
         analytics.put("conversionRates", conversionRates);
 
-        // Average time in stage
-        Map<String, Double> avgTimeInStage = calculateAvgTimeInStage(allApps);
-        analytics.put("avgTimeInStage", avgTimeInStage);
-
         return ResponseEntity.ok(analytics);
     }
 
@@ -88,31 +84,4 @@ public class AnalyticsController {
         return weeklyCount;
     }
 
-    private Map<String, Double> calculateAvgTimeInStage(List<ApplicationEntity> apps) {
-        Map<String, Double> avgTime = new HashMap<>();
-
-        // This is simplified - in production, you'd track actual time in each stage via
-        // activity log
-        // For now, calculate time from dateApplied to current status change
-        for (ApplicationEntity.Status status : ApplicationEntity.Status.values()) {
-            List<ApplicationEntity> appsInStatus = apps.stream()
-                    .filter(app -> app.getStatus() == status && app.getDateApplied() != null)
-                    .collect(Collectors.toList());
-
-            if (!appsInStatus.isEmpty()) {
-                double avgDays = appsInStatus.stream()
-                        .mapToLong(app -> {
-                            OffsetDateTime start = app.getDateApplied();
-                            OffsetDateTime end = app.getUpdatedAt();
-                            return java.time.Duration.between(start, end).toDays();
-                        })
-                        .average()
-                        .orElse(0.0);
-
-                avgTime.put(status.name(), avgDays);
-            }
-        }
-
-        return avgTime;
-    }
 }

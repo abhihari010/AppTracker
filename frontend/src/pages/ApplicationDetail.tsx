@@ -243,7 +243,6 @@ export default function ApplicationDetail() {
                         <option value="INTERVIEWED">Interviewed</option>
                         <option value="OFFER">Offer</option>
                         <option value="REJECTED">Rejected</option>
-                        <option value="ACCEPTED">Accepted</option>
                       </select>
                       <select
                         value={editForm.priority}

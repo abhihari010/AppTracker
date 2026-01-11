@@ -180,9 +180,9 @@ public class ScheduledTaskService {
                             .replaceAll("[↳🔽⬇️➡️⏩]", "") // Remove arrow/emoji characters
                             .trim();
                     app.setCompany(companyName);
-                    
+
                     app.setRole(cells[2].trim());
-                    
+
                     // Clean up location - handle multiple locations separated by <br> or other HTML
                     String location = cells[3].trim()
                             .replaceAll("(?i)<br\\s*/?>", ", ") // Replace <br> with comma (case-insensitive)
@@ -256,9 +256,13 @@ public class ScheduledTaskService {
                     // - Empty or very short company names (likely arrows/emojis)
                     // - No URL
                     // - Company names that are just special characters
+                    // - Locations with asterisks or other markdown artifacts
+                    // - Locations with excessive special characters
                     if (app.getCompany() != null && app.getCompany().length() > 1
+                            && app.getRole() != null && app.getRole().length() > 2
                             && app.getJobUrl() != null && !app.getJobUrl().isEmpty()
-                            && !app.getCompany().matches("[^a-zA-Z0-9\\s]+")) { // Reject if only special chars
+                            && !app.getCompany().matches("[^a-zA-Z0-9\\s]+") // Reject if only special chars
+                            && (app.getLocation() == null || isValidLocation(app.getLocation()))) { // Validate location
                         applications.add(app);
                     }
                 }
@@ -266,5 +270,42 @@ public class ScheduledTaskService {
         }
 
         return applications;
+    }
+
+    /**
+     * Validates if a location string is clean and properly formatted
+     * Rejects locations with markdown artifacts, excessive special characters, etc.
+     */
+    private boolean isValidLocation(String location) {
+        if (location == null || location.isEmpty()) {
+            return true; // Allow empty/null locations
+        }
+
+        // Reject if contains asterisks (markdown bold/italic)
+        if (location.contains("**") || location.contains("__")) {
+            return false;
+        }
+
+        // Reject if contains HTML tags that weren't cleaned
+        if (location.matches(".*<[^>]+>.*")) {
+            return false;
+        }
+
+        // Reject if more than 30% of characters are special characters (excluding
+        // spaces, commas)
+        long specialCharCount = location.chars()
+                .filter(c -> !Character.isLetterOrDigit(c) && c != ' ' && c != ',')
+                .count();
+        double specialCharRatio = (double) specialCharCount / location.length();
+        if (specialCharRatio > 0.3) {
+            return false;
+        }
+
+        // Reject if it looks like a count followed by "locations" (e.g., "6 locations")
+        if (location.matches("^\\d+\\s*locations.*")) {
+            return false;
+        }
+
+        return true;
     }
 }

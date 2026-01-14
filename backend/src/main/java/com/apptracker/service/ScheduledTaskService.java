@@ -134,6 +134,27 @@ public class ScheduledTaskService {
         }
     }
 
+    @Transactional
+    @Scheduled(cron = "0 0 1 * * *")
+    public void removeUnverifiedUsers() {
+        logger.info("Starting scheduled task: remove unverified users older than 7 days");
+
+        try {
+            List<User> unverifiedUsers = userRepo
+                    .findByEmailVerifiedFalseAndCreatedAtBefore(OffsetDateTime.now().minusDays(7));
+            if (!unverifiedUsers.isEmpty()) {
+                userRepo.deleteAll(unverifiedUsers);
+                logger.info("Removed {} unverified users older than 7 days", unverifiedUsers.size());
+
+            } else {
+                logger.info("No unverified users found for removal");
+            }
+
+        } catch (Exception e) {
+            logger.error("Error removing unverified users", e);
+        }
+    }
+
     /**
      * Returns the cached list of open job postings from GitHub
      * This list is automatically refreshed every 12 hours
@@ -308,4 +329,5 @@ public class ScheduledTaskService {
 
         return true;
     }
+
 }

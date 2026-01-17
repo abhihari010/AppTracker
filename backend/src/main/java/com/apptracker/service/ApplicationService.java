@@ -116,6 +116,7 @@ public class ApplicationService {
         app.setLocation(request.getLocation());
         app.setJobUrl(request.getJobUrl());
         app.setDateApplied(request.getDateApplied());
+        app.setStatus(ApplicationEntity.Status.valueOf(request.getStatus()));
 
         if (request.getPriority() != null) {
             app.setPriority(ApplicationEntity.Priority.valueOf(request.getPriority()));

@@ -14,7 +14,7 @@ import {
   Paperclip,
   Activity,
 } from "lucide-react";
-import api, { Application } from "../api";
+import api, { Application, applicationsApi } from "../api";
 import Nav from "../components/Nav";
 import StatusBadge from "../components/StatusBadge";
 import PriorityBadge from "../components/PriorityBadge";
@@ -53,8 +53,8 @@ export default function ApplicationDetail() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [applicationToDelete, setApplicationToDelete] =
     useState<Application | null>(null);
-  // Fetch application
 
+  // Fetch application
   const { data: application, isLoading } = useQuery({
     queryKey: ["application", id],
     queryFn: async () => {
@@ -111,11 +111,12 @@ export default function ApplicationDetail() {
 
   // Update mutation
   const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
-      await api.put(`/apps/${id}`, data);
+    mutationFn: async (data: Application) => {
+      const response = await applicationsApi.update(id!, data);
+      return response.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["application", id] });
+    onSuccess: (updatedApp) => {
+      queryClient.setQueryData(["application", id], updatedApp);
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       setIsEditing(false);
     },
@@ -124,7 +125,7 @@ export default function ApplicationDetail() {
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      await api.delete(`/apps/${id}`);
+      await applicationsApi.delete(id!);
     },
     onSuccess: () => {
       navigate("/applications");

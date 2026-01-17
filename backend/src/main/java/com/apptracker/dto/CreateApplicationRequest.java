@@ -17,10 +17,10 @@ public class CreateApplicationRequest {
     @URL(message = "Job URL must be a valid URL")
     private String jobUrl;
 
-    @Pattern(regexp = "URGENT|HIGH|MEDIUM|LOW", message = "Priority must be one of: URGENT, HIGH, MEDIUM, LOW")
+    @Pattern(regexp = "HIGH|MEDIUM|LOW", message = "Priority must be one of: HIGH, MEDIUM, LOW")
     private String priority;
 
-    @Pattern(regexp = "APPLIED|INTERVIEWING|OFFER|REJECTED|ACCEPTED|WITHDRAWN", message = "Invalid status")
+    @Pattern(regexp = "SAVED|APPLIED|OA|INTERVIEW|OFFER|REJECTED", message = "Invalid status")
     private String status;
 
     private OffsetDateTime dateApplied;
